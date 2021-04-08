@@ -1,0 +1,60 @@
+@charset 'utf-8';
+
+@font-face {
+    font-family: 'Whitney Book';
+    src: url('../fonts/Whitney-Book.woff2')
+}
+
+@font-face {
+    font-family: 'Whitney Semibold';
+    src: url('../fonts/Whitney-Semibold.woff2')
+}
+
+@font-face {
+    font-family: 'Fira Mono';
+    src: url('../fonts/FiraMono-Regular.ttf')
+}
+
+$family-whitney-book: 'Whitney Book';
+$family-whitney-semibold: 'Whitney Semibold';
+$family-fira-mono: 'Fira Mono';
+
+
+$family-primary: $family-whitney-book;
+$family-secondary: $family-whitney-semibold;
+$family-code: $family-fira-mono;
+
+//primary
+$red: #F22F46;
+$night: #001489;
+$white: #FFFFFF;
+
+//secondary
+$cerulean: #008CFF;
+$blue: $cerulean;
+$treefrog: #36D576;
+$green: $treefrog;
+$tangerine: #F47C22;
+$orange: $treefrog;
+$eggyolk: #FFDD35;
+$yellow: $eggyolk;
+$orchid: #8C5BD8;
+$purple: $orchid;
+
+$primary: $red;
+$light: $white;
+$dark: $night;
+$info: $primary;
+$success: $treefrog;
+$warning: $eggyolk;
+$danger: $tangerine;
+
+$menu-label-spacing: .1em;
+$menu-label-font-size: 1em;
+$menu-list-link-padding: .1em .75em;
+
+@import '../../node_modules/bulma/bulma.sass';
+
+.menu-label {
+    font-family: $family-secondary;
+}
