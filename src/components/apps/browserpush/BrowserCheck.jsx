@@ -9,7 +9,11 @@ class BrowserCheck extends Component {
     }
 
     componentDidMount() {
-        var update = {}
+        this.checkBrowser().then(update => this.props.handleBrowserCheck(update))
+    }
+
+    checkBrowser = async () => {
+        var update = {};
         if (browserName == 'Safari') {
             var permissionData = window.safari.pushNotification.permission('web.dev.noodl');
                 update.browserDetails = {pushService: 'apn', browserName};
@@ -18,10 +22,22 @@ class BrowserCheck extends Component {
                 } else if (permissionData.permission == 'denied') {
                     update = {...update, denied: true}
                 }
+        } else if (firebase.messaging.isSupported()) {
+            update.browserDetails = {pushService: 'fcm', browserName};
+            if (Notification.permission == 'granted') {
+                let token = await firebase.messaging().getToken({
+                    vapidKey:"BJ3_q6mfz4YHspZ3u1jRDH28KK-IPXDqZTDlYL173zOXN_lp35NrorpMBnuzbCH3suhkvgLypc0WN_J2TLVNpyE"
+                });
+                if (token) {
+                    update = {...update, registered: true, address: token}
+                }
+            } else if (Notification.permission == 'denied') {
+                update = {...update, denied: true}
+            }
         } else {
-            update.browserDetails = {supportedText: 'NOT YET IMPLEMENTED', browserName};
+            update.browserDetails = {supportedText: 'This browser is not supported', browserName};
         }
-        this.props.handleBrowserCheck(update);
+        return update
     }
 
     render() {

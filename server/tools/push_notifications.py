@@ -20,7 +20,7 @@ def package():
     return redirect('https://static.noodl.dev/safari/v2/pushPackages/web.dev.noodl')
 
 @push_notifications.route('/safari/v1/devices/<string:token>/registrations/web.dev.noodl', methods=['POST'])
-def register(token):
+def apn_register(token):
     print(request.headers)
     if request.headers.get('Authorization') != 'ApplePushNotifications ' + apn_auth:
         return 'Unauthorized', 401
@@ -50,12 +50,33 @@ def delete(token):
         return 'Internal Server Error', 500
     return 'OK', 200
 
-@push_notifications.route('/tools/push/<string:address>/send', methods=['POST'])
+@push_notifications.route('/firebase/<string:token>/register', methods=['POST'])
 @cross_origin(origins=['https://tools.noodl.dev'])
-def push(address):
+def fcm_register(token):
+    identity = token.split(':')[0]
     try:
         bindings = notify.bindings.list(
-            identity=[address]
+            tag=['fcm'],
+            identity=[identity]
+        )
+        for binding in bindings:
+            notify.bindings(binding.sid).delete()
+        binding = notify.bindings.create(
+            identity=identity,
+            binding_type='fcm',
+            address=token,
+            credential_sid=oeg('TWILIO_FCM_CREDENTIAL_SID')
+        )
+    except Exception as e:
+        return 'Internal Server Error', 500
+    return 'OK', 200
+
+@push_notifications.route('/tools/push/<string:identity>/send', methods=['POST'])
+@cross_origin(origins=['https://tools.noodl.dev'])
+def push(identity):
+    try:
+        bindings = notify.bindings.list(
+            identity=[identity]
         )
         if bindings:
             aps = {
@@ -65,12 +86,19 @@ def push(address):
                     },
                     "url-args":["success"]
                     }
-            notify.notifications.create(
-                identity=address,
+            note = notify.notifications.create(
+                identity=identity,
                 apn={
                     'aps': aps
+                },
+                fcm={
+                    'notification': {
+                        "title": "Never gonna fail to push",
+                        "body": "We\'re no strangers to pu-u-ush"
+                    }
                 }
             )
+            print(note.sid)
     except Exception as e:
         return 'Internal Server Error', 500
     return 'OK', 200

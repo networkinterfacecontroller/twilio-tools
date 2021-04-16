@@ -13,8 +13,6 @@ def root():
 @app.route('/authorize', methods=['POST'])
 @cross_origin(origins=['https://tools.noodl.dev'], expose_headers=['Set-Cookie'], supports_credentials=True)
 def authorize():
-    print(request.cookies)
-    print(request.headers)
     auth = request.form.get('PSK') or request.cookies.get('PSK')
     if auth and auth == os.environ.get('PSK'):
         if request.cookies.get('PSK'):

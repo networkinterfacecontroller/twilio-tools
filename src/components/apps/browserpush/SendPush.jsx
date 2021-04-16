@@ -10,7 +10,13 @@ class SendPush extends Component {
     onSendPush = async () => {
         try {
             this.setState({loading: true});
-            const response = await ky.post(`https://api.noodl.dev/tools/push/${this.props.address}/send`, {
+            var identity;
+            if (this.props.pushService == 'fcm') {
+                identity = this.props.address.split(':')[0]
+            } else {
+                identity = this.props.address
+            }
+            const response = await ky.post(`https://api.noodl.dev/tools/push/${identity}/send`, {
                 mode: 'cors',
             });
         } catch(err) {
