@@ -2,7 +2,7 @@ import './sass/style.scss';
 import React, { Component } from 'react';
 import Menu from './components/Menu.jsx';
 import Main from './components/Main.jsx';
-import Authorize from './components/Authorize.jsx'
+import Authorize from './components/Authorize.jsx';
 
 
 class App extends Component {

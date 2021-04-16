@@ -11,12 +11,19 @@ def root():
     return 'Not Found', 404
 
 @app.route('/authorize', methods=['POST'])
-@cross_origin(origins=['https://tools.noodl.dev'])
+@cross_origin(origins=['https://tools.noodl.dev'], expose_headers=['Set-Cookie'], supports_credentials=True)
 def authorize():
-    if request.form.get('PSK') and request.form.get('PSK') == os.environ.get('PSK'):
-        return 'OK', 200
+    print(request.cookies)
+    print(request.headers)
+    auth = request.form.get('PSK') or request.cookies.get('PSK')
+    if auth and auth == os.environ.get('PSK'):
+        if request.cookies.get('PSK'):
+            cookies = {}
+        else:
+            cookies = {'Set-Cookie': f'PSK={request.form.get("PSK")};Domain=api.noodl.dev;Secure;Max-Age=2592000'}
+        return ('OK', 200, cookies)
     else:
-        return 'Unauthorized', 401
+        return ('Unauthorized', 401)
 
 
 

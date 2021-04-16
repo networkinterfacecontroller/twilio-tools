@@ -1,41 +1,56 @@
-import React from 'react';
+import React, { Component } from 'react';
 import ky from 'ky';
 
-function Authorize(props) {
+class Authorize extends Component {
+    constructor(props) {
+        super(props);
+    }
 
-    async function onSubmit() {
-        var psk = document.getElementById('psk').value;
-        const formData = new FormData();
-        formData.append('PSK', psk);
+    componentDidMount() {
+        this.sendRequest()
+    }
+
+    sendRequest = async (options=null) => {
         try {
             const response = await ky.post('https://api.noodl.dev/authorize', {
                 mode: 'cors',
-                body: formData
+                credentials: 'include',
+                ...options
             });
-            props.onSubmit(true);
+            this.props.onSubmit(true);
         } catch (err) {
             console.log(err);
         }
     }
-    
-    return (
-        <section className='hero is-fullheight'>
-            <div className='hero-body'>
-                <div className='container has-text-centered'>
-                    <div className='field'>
-                        <div className='control'>
-                            <input className='input' id='psk' type='text' placeholder='Enter your pre-shared key..'></input>
+
+    onSubmit = async () => {
+        var psk = document.getElementById('psk').value;
+        const formData = new FormData();
+        formData.append('PSK', psk);
+        this.sendRequest({body:formData});
+       
+    }
+
+    render () {
+        return (
+            <section className='hero is-fullheight'>
+                <div className='hero-body'>
+                    <div className='container has-text-centered'>
+                        <div className='field'>
+                            <div className='control'>
+                                <input className='input' id='psk' type='text' placeholder='Enter your pre-shared key..'></input>
+                            </div>
                         </div>
-                    </div>
-                    <div className='field'>
-                        <div className='control'>
-                            <a className='button is-primary' onClick={onSubmit}>Submit</a>
+                        <div className='field'>
+                            <div className='control'>
+                                <a className='button is-primary' onClick={this.onSubmit}>Submit</a>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </section>
-    )
+            </section>
+        );
+    }
 }
 
 export default Authorize;
